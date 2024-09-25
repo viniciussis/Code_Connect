@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import style from "./card-post.module.scss";
+import styles from "./card-post.module.scss";
 import { IPost } from "@/interfaces";
 import { Avatar } from "../Avatar";
 
@@ -10,15 +10,15 @@ interface CardPostProps {
 
 export const CardPost = ({ post }: CardPostProps) => {
   return (
-    <article>
-      <header>
-        <Image alt={post.title} src={post.cover} />
+    <article className={styles.card}>
+      <header className={styles.header}>
+        <Image alt={post.title} src={post.cover} width={438} height={133} />
       </header>
-      <section>
+      <section className={styles.body}>
         <h2>{post.title}</h2>
         <p>{post.body}</p>
       </section>
-      <footer>
+      <footer className={styles.footer}>
         <Avatar imageSrc={post.author.avatar} name={post.author.username} />
       </footer>
     </article>

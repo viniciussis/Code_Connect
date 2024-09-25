@@ -1,4 +1,5 @@
 import { Aside } from "@/components/Aside";
+import { Prompt } from "next/font/google";
 import "./globals.scss";
 
 export const metadata = {
@@ -6,17 +7,25 @@ export const metadata = {
   description: "A Social Media Network for DEVs!",
 };
 
+const prompt = Prompt({
+  weight: ["400", "600"],
+  display: "swap",
+  subsets: ["latin"],
+});
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="pt-br" className={prompt.className}>
       <body>
         <div className="app-container">
-          <Aside />
-          {children}
+          <div>
+            <Aside />
+          </div>
+          <div className="main-content">{children}</div>
         </div>
       </body>
     </html>
