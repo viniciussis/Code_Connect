@@ -1,7 +1,9 @@
 import { IPost } from "@/interfaces";
-import logger from "@/logger";
 import { remark } from "remark";
 import html from "remark-html";
+import styles from "./page.module.scss";
+import logger from "@/logger";
+import { CardPost } from "@/components/CardPost";
 
 async function getPostBySlug(slug: string): Promise<IPost | null> {
   const url = `http://localhost:3042/posts?slug=${slug}`;
@@ -31,11 +33,17 @@ interface PostProps {
 
 const Post = async ({ params }: PostProps) => {
   const post = await getPostBySlug(params.slug);
+
+  if (!post) return <div>Post not found</div>;
+
   return (
-    <>
-      <h1>{post?.title}</h1>
-      <div dangerouslySetInnerHTML={{ __html: post?.markdown }} />
-    </>
+    <div>
+      <CardPost post={post} />
+      <h3 className={styles.subtitle}>Código:</h3>
+      <div className={styles.code}>
+        <div dangerouslySetInnerHTML={{ __html: post.markdown || "" }} />
+      </div>
+    </div>
   );
 };
 
