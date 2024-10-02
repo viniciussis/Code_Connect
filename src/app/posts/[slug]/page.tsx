@@ -1,28 +1,40 @@
-import { IPost } from "@/interfaces";
+import { CardPost } from "@/components/CardPost";
+import prisma from "../../../../prisma/db";
+import styles from "./page.module.scss";
 import { remark } from "remark";
 import html from "remark-html";
-import styles from "./page.module.scss";
 import logger from "@/logger";
-import { CardPost } from "@/components/CardPost";
+import { redirect } from "next/navigation";
 
-async function getPostBySlug(slug: string): Promise<IPost | null> {
-  const url = `http://localhost:3042/posts?slug=${slug}`;
-  const resp = await fetch(url);
-  if (!resp.ok) {
-    logger.error("Error fetching posts...");
-    return null;
-  }
-  logger.info("Posts fetched successfully!");
-  const data: IPost[] = await resp.json();
-  if (data.length === 0) {
-    return null;
-  }
-  const post = data[0];
+async function getPostBySlug(slug: string) {
+  try {
+    const post = await prisma.post.findFirst({
+      where: { slug },
+      select: {
+        authorId: true,
+        body: true,
+        title: true,
+        cover: true,
+        slug: true,
+        markdown: true,
+        id: true,
+        author: true,
+      },
+    });
 
-  const processedPost = await remark().use(html).process(post.markdown);
-  const htmlPost = processedPost.toString();
-  post.markdown = htmlPost;
-  return post;
+    if (!post) {
+      throw new Error(`Post with slug ${slug} not Found!`);
+    }
+
+    const processedPost = await remark().use(html).process(post.markdown);
+    const htmlPost = processedPost.toString();
+    post.markdown = htmlPost;
+
+    return post;
+  } catch (error) {
+    logger.error("Error getting post!", { error, slug });
+  }
+  redirect("/not-found");
 }
 
 interface PostProps {
@@ -38,7 +50,7 @@ const Post = async ({ params }: PostProps) => {
 
   return (
     <div>
-      <CardPost post={post} />
+      <CardPost post={post} highlight />
       <h3 className={styles.subtitle}>Código:</h3>
       <div className={styles.code}>
         <div dangerouslySetInnerHTML={{ __html: post.markdown || "" }} />
