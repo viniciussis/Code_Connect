@@ -1,10 +1,10 @@
 import { CardPost } from "@/components/CardPost";
 import prisma from "../../../../prisma/db";
+import { redirect } from "next/navigation";
 import styles from "./page.module.scss";
 import { remark } from "remark";
 import html from "remark-html";
 import logger from "@/logger";
-import { redirect } from "next/navigation";
 
 async function getPostBySlug(slug: string) {
   try {
